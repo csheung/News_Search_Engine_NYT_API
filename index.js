@@ -34,20 +34,12 @@ app.post("/", async (req, res) => {
   console.log(keywordArr);
   
   // Handle query elements one by one
-  if (keywordArr.length == 1 && !keywordArr[0]) {
-    queryURL += "&q=all";
-  } else {
+  if (!(keywordArr.length == 1 && !keywordArr[0])) {
     // Add given keywords one by one into the queryURL
     for (const element of keywordArr) {
       let elem = element.replace(" ", "+");
       queryURL += "&q=" + elem;
     }
-  }
-
-  // Add type to the API_URL
-  var contentType = req.body.type;
-  if (contentType) {
-    queryURL += "&type_of_material=" + contentType;
   }
   
   // Retrieve Start and End Dates given if "Yes/hasDate" is selected
@@ -66,8 +58,20 @@ app.post("/", async (req, res) => {
     const response = await axios.get(queryURL);
     // console.log(response.data.response.docs);
     const resultArr = response.data.response.docs;
-    const range = Math.min(10, resultArr.length)
-    res.render("index.ejs", { filteredData: resultArr.slice(0, range) });
+
+    // Extract specific content type from the data
+    const extractedResultArr = [];
+    if (req.body.type) {
+      resultArr.forEach(element => {
+        if (element.type_of_material === req.body.type) {
+          extractedResultArr.push(element);
+        }
+      });
+    }
+
+    // Get the view range and render ejs file
+    const range = Math.min(10, extractedResultArr.length)
+    res.render("index.ejs", { filteredData: extractedResultArr.slice(0, range) });
 
   } catch (error) {
     console.error("Failed to make request:", error.message);
@@ -81,3 +85,13 @@ app.post("/", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
 });
+
+/**
+ * ArticleSearch API Links from New York Times
+ * https://developer.nytimes.com/docs/articlesearch-product/1/overview
+ * https://developer.nytimes.com/docs/articlesearch-product/1/routes/articlesearch.json/get
+ * 
+ * Most Popular including the link for Most Shared on Facebook
+ * https://developer.nytimes.com/docs/most-popular-product/1/overview
+ * 
+ */
