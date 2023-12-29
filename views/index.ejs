@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles/main.css">
+  <title>News Centre</title>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Find the News and Explore the World 📰</h1>
+
+    <form action="/" id="form" class="form" method="POST">
+      <!-- Textbox for keywords -->
+      <input type="text" name="keywords" class="form-textbox"
+          placeholder="Keywords (Use ONLY commas to separate keywords)">
+      <select name="type" class="form-select">
+        <option value="" data-display="Select">All Type</option>
+        <option value="news">News</option>
+        <option value="article">Article</option>
+        <option value="review">Review</option>
+        <option value="question">Question</option>
+        <option value="interactive">Interactive</option>
+      </select>
+      <button type="submit" class="form-submit">Go</button>
+      <select name="date" class="form-select">
+        <option value="noDate" data-display="Select">Not includes date range</option>
+        <option value="hasDate">Includes date range</option>
+        <!-- <option value="hasNoDate">No</option> -->
+      </select>
+
+      <!-- Date selections -->
+      <!-- <label for="start">Start date:</label> -->
+      <input type="date" id="startDate" name="startDate" placeholder="Start Date"
+      value="2023-09-01" min="2000-01-01" max="2025-12-31" />
+      <!-- <label for="end">End date:</label> -->
+      <input type="date" id="endDate" name="endDate" placeholder="End Date"
+          value="2023-12-31" min="2000-01-01" max="2025-12-31" />
+
+      <!-- <select name="participants" class="form-select">
+        <option value="">Any number of people</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select> -->
+    </form>
+
+    <!-- List shared news -->
+    <% if (locals.mostSharedData) { %>
+      
+      <% mostSharedData.forEach(element => { %>
+        
+        <section id="cards" class="cards">
+          <article class="card-item">
+            <h2 class="card-activity">
+              <%= element.title %>
+            </h2>
+            <h3 class="card-activity">
+              <%= element.abstract %>
+            </h3>
+            <div class="card-info">
+              <span class="card-type">
+                <%= element.type %>
+              </span>
+              <span class="card-participants">
+                <span class="card-number"></span>
+                <%= element.published_date %>
+              </span>
+            </div>
+          </article>
+        </section>
+
+      <% }); %>
+    <% } %>
+
+    <!-- List filtered news -->
+    <% if (locals.filteredData) { %>
+      
+      <% filteredData.forEach(element => { %>
+        
+        <section id="cards" class="cards">
+          <article class="card-item">
+            <h2 class="card-activity">
+              <%= (element.headline.print_headline || element.headline.main) %>
+            </h2>
+            <h3 class="card-activity">
+              <%= element.lead_paragraph %>
+            </h3>
+            <div class="card-info">
+              <span class="card-type">
+                <%= element.type_of_material %>
+              </span>
+              <span class="card-participants">
+                <span class="card-number"></span>
+                <%= element.pub_date.substring(0, 10) %>
+              </span>
+            </div>
+          </article>
+        </section>
+
+      <% }); %>
+    <% } %>
+
+    <% if (locals.error) { %>
+      
+      <div id="tag-error" class="tag-error">
+        <!-- Show any errors that were sent from the backend -->
+        <h2><%= error %></h2>
+      </div>
+
+    <% } %>
+
+  </div>
+
+</body>
+
+</html>
